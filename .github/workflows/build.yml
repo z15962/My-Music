@@ -34,4 +34,3 @@ jobs:
         with:
           name: journal-erreurs
           path: build.log
-
