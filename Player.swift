@@ -4,12 +4,18 @@ import MediaPlayer
 import Observation
 
 @MainActor @Observable final class Player {
-    var queue: [Track] = [], index = 0, isPlaying = false, shuffle = false, elapsed = 0.0
+    var queue: [Track] = []
+    var index = 0
+    var isPlaying = false
+    var shuffle = false
+    var elapsed = 0.0
     var store: Store?
     var current: Track? { queue.indices.contains(index) ? queue[index] : nil }
-    private var original: [Track] = []
-    private let ap = AVPlayer()
-    private var played = 0.0, last = 0.0, counted = false
+    @ObservationIgnored private var original: [Track] = []
+    @ObservationIgnored private let ap = AVPlayer()
+    @ObservationIgnored private var played = 0.0
+    @ObservationIgnored private var last = 0.0
+    @ObservationIgnored private var counted = false
 
     init() {
         ap.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { [weak self] t in
@@ -55,7 +61,8 @@ import Observation
     }
     func toggle(_ on: Bool? = nil) {
         let p = on ?? !isPlaying
-        p ? ap.play() : ap.pause(); isPlaying = p; info()
+        if p { ap.play() } else { ap.pause() }
+        isPlaying = p; info()
     }
     func seek(_ s: Double) { ap.seek(to: CMTime(seconds: s, preferredTimescale: 600)); elapsed = s; last = s; info() }
     func next() { guard !queue.isEmpty else { return }; index = (index + 1) % queue.count; load() }
