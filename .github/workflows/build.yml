@@ -14,15 +14,11 @@ jobs:
         run: xcodegen generate
       - name: Compiler (sans signature)
         run: |
-          set -o pipefail
           xcodebuild -project MaMusique.xcodeproj -scheme MaMusique \
             -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-            2>&1 | tee build.log
-      - name: Afficher les erreurs
-        if: failure()
-        run: grep -E "error:" build.log | sort -u | head -30
+            > build.log 2>&1 || { echo "=== ERREURS ==="; grep -E "error:" build.log | sort -u | head -30; exit 1; }
       - name: Créer le fichier .ipa
         run: |
           mkdir Payload
@@ -32,8 +28,3 @@ jobs:
         with:
           name: MaMusique-ipa
           path: MaMusique.ipa
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: journal-erreurs
-          path: build.log
