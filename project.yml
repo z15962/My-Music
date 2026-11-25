@@ -12,7 +12,11 @@ targets:
   MaMusique:
     type: application
     platform: iOS
-    sources: [Sources]
+    sources:
+      - MusicApp.swift
+      - Player.swift
+      - Store.swift
+      - Views.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.mamusique.app
